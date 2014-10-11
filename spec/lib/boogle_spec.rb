@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe "Boogle" do
-  context "API" do
-    context "POST /index"
-    context "GET /search"
-  end
 
+
+describe "Boogle" do
   context "Data" do
-    it "should insert new index"
+    it "should insert new index" do
+
+    end
+
     it "should score page by query"
 
     context "Score" do
@@ -18,3 +18,8 @@ describe "Boogle" do
     end
   end
 end
+
+# context "API" do
+#   context "POST /index"
+#   context "GET /search"
+# end
