@@ -1,77 +1,10 @@
 require 'spec_helper'
-require 'pry'
-require 'json'
 
 # MongoMapper.setup({'production' => {'uri' => ENV['MONGODB_URI']}}, 'production')
 # MongoMapper.database = ENV['MONGODB_DB'] || "boogle"
-#
-# class Page
-#   include MongoMapper::Document
-#
-#   key :pageId
-#   key :content
-# end
-
-class ScoreString < String
-  def to_word_array
-    self.no_case.no_punctuation.split_spaces
-  end
-
-  def no_punctuation
-    self.gsub(/[^[[:word:]]\s]/, '')
-  end
-
-  def no_case
-    self.downcase
-  end
-
-  def split_spaces
-    self.split(' ')
-  end
-end
-
-class ScoreMachine
-  class << self
-    def calculate(content, query)
-      content = (ScoreString.new content).to_word_array
-      query = (ScoreString.new query).to_word_array
-
-      (content & query).count
-    end
-  end
-end
 
 class SomeClass
   def self.method_to_retrieve_data(q)
-  end
-end
-
-module Boogle
-  class API
-    class << self
-      def search(query)
-        raw_result = ::SomeClass.method_to_retrieve_data(query)
-
-        matches = build_matches(query, raw_result)
-        sorted_matches = matches.sort {|p, n| n["score"] <=> p["score"]  }
-
-        { "matches" => sorted_matches }.to_json
-      end
-
-      def build_matches(query, raw_result)
-        result = raw_result.inject([]) do |arr, p|
-          score = ScoreMachine.calculate(p[:content], query)
-          if score > 0
-            arr << result_json(p[:pageId],score)
-          end
-          arr
-        end
-      end
-
-      def result_json(pageId, score)
-        { "pageId" => pageId, "score" => score}
-      end
-    end
   end
 end
 
@@ -94,7 +27,7 @@ describe "Boogle" do
           {"pageId" => 300, "score" => 2},
           {"pageId" => 302, "score" => 1}
         ]
-      }.to_json)
+      })
     end
 
     it "should return score json given a set pages and a single query" do
@@ -105,7 +38,7 @@ describe "Boogle" do
           {"pageId" => 300, "score" => 3},
           {"pageId" => 301, "score" => 2}
         ]
-      }.to_json)
+      })
     end
 
     it "should return no matches when query does not match anything" do
@@ -114,7 +47,7 @@ describe "Boogle" do
       allow(SomeClass).to receive(:method_to_retrieve_data).and_return(pages)
       expect(Boogle::API.search(query)).to eq({
         "matches" => []
-      }.to_json)
+      })
     end
   end
 
