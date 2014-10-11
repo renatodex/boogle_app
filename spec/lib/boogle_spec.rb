@@ -17,6 +17,14 @@ describe "Boogle" do
     { :pageId => 303, :content => "I wanted him to return, due to everything he had given to me"}, #0
   ]}
 
+  context "API controller" do
+    it "should allow accessing the home page" do
+      get '/index'
+      last_response.should be_ok
+    end
+  end
+
+
   context "API Handling" do
     it "should return score json given a set pages and a single query" do
       query = "the fox is a very weaken mind man"

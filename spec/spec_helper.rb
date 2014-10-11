@@ -15,10 +15,17 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'rack/test'
 require 'bundler'
 Bundler.require
+require './boogle'
 
 RSpec.configure do |config|
+  include Rack::Test::Methods
+  def app() BoogleApp.new end
+
+  config.include FactoryGirl::Syntax::Methods
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
