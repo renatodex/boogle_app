@@ -11,11 +11,24 @@ require 'pry'
 #   key :content
 # end
 
+class ScoreString < String
+  def no_punctuation
+    self.gsub(/[^[[:word:]]\s]/, '')
+  end
+
+  def no_case
+    self.downcase
+  end
+end
+
 class ScoreMachine
   class << self
     def calculate(content, query)
-      content_words = content.split(' ')
-      query_words = query.split(' ')
+      f_content = ScoreString.new content
+      f_query = ScoreString.new query
+
+      content_words = f_content.no_punctuation.no_case.split(' ')
+      query_words = f_query.no_punctuation.no_case.split(' ')
 
       (query_words & content_words).count
     end
@@ -30,10 +43,34 @@ describe "Boogle" do
       expect(ScoreMachine.calculate page_content, query).to eq 4
     end
 
-    it "score should ignore case"
-    it "score should ignore punctuation"
-    it "score should ignore word order"
-    it "score should ignore frequency"
+    it "score should ignore case" do
+      page_content = "the QuicK bRoWn fox jumped over the lazy DOG"
+      query = "quick but lazy brown dog"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+    end
+
+    it "score should ignore punctuation" do
+      page_content = "the QuicK, bRoWn fox. jumped over, the lazy. DOG"
+      query = "quick but lazy brown dog"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+    end
+
+    it "score should ignore word order" do
+      page_content = "the QuicK, bRoWn fox. jumped over, the lazy. DOG"
+      query = "quick but lazy brown dog"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+      query = "brown quick dog lazy but"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+    end
+
+    it "score should ignore frequency" do
+      page_content = "the QuicK quick QUICK, bRoWn broWN brown fox fox fox. jumped jum jumppepp jumped! over, the lazy!. DOG dog!"
+      query = "quick but lazy brown dog"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+
+      query = "quick quick lazy lazy brown brown dog dog"
+      expect(ScoreMachine.calculate page_content, query).to eq 4
+    end
   end
 end
 
