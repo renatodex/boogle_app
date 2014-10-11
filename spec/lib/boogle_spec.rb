@@ -12,6 +12,10 @@ require 'pry'
 # end
 
 class ScoreString < String
+  def to_word_array
+    self.no_case.no_punctuation.split_spaces
+  end
+
   def no_punctuation
     self.gsub(/[^[[:word:]]\s]/, '')
   end
@@ -19,18 +23,19 @@ class ScoreString < String
   def no_case
     self.downcase
   end
+
+  def split_spaces
+    self.split(' ')
+  end
 end
 
 class ScoreMachine
   class << self
     def calculate(content, query)
-      f_content = ScoreString.new content
-      f_query = ScoreString.new query
+      content = (ScoreString.new content).to_word_array
+      query = (ScoreString.new query).to_word_array
 
-      content_words = f_content.no_punctuation.no_case.split(' ')
-      query_words = f_query.no_punctuation.no_case.split(' ')
-
-      (query_words & content_words).count
+      (content & query).count
     end
   end
 end
@@ -70,6 +75,12 @@ describe "Boogle" do
 
       query = "quick quick lazy lazy brown brown dog dog"
       expect(ScoreMachine.calculate page_content, query).to eq 4
+    end
+
+    it "score should ignore frequency (not convinced)" do
+      page_content = "the the the the the the the the AHHH the the the the the"
+      query = "the AHHH the AHHH the AHHHHHH"
+      expect(ScoreMachine.calculate page_content, query).to eq 2
     end
   end
 end
