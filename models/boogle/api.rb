@@ -13,7 +13,7 @@ module Boogle
 
       def build_matches(query, raw_result)
         result = raw_result.inject([]) do |arr, p|
-          score = ScoreMachine.calculate(p[:content], query)
+          score = Score.calculate(p[:content], query)
           if score > 0
             arr << single_match(p[:pageId],score)
           end
