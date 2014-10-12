@@ -107,10 +107,3 @@ describe "Boogle" do
     end
   end
 end
-
-
-
-# context "API" do
-#   context "POST /index"
-#   context "GET /search"
-# end
