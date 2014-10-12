@@ -3,7 +3,7 @@ module Boogle
     class << self
       def search(query)
 
-        raw_result = ::SomeClass.method_to_retrieve_data(query)
+        raw_result = ::Page.all
 
         matches = build_matches(query, raw_result)
         sorted_matches = matches.sort {|p, n| n["score"] <=> p["score"]  }

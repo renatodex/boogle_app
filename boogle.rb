@@ -1,14 +1,14 @@
-IncompleteParamsException = Class.new(StandardError)
-
 class BoogleApp < Sinatra::Base
 
   configure do
+    # MongoMapper.setup({'production' => {'uri' => ENV['MONGODB_URI']}}, 'production')
     MongoMapper.database = ENV['MONGODB_DB'] || "boogle"
   end
 
   get '/search' do
+    content_type :json
     result = ::Boogle::API.search(params[:query])
-    render :json => result
+    result.to_json
 	end
 
   get '/index' do
