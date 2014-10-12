@@ -30,8 +30,8 @@ RSpec.configure do |config|
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
 
-  ["lib/**/*.rb", "models/**/*.rb"].each do |d|
-    Dir[File.join(File.dirname(__FILE__), "/../", d)].each {|file| require file }
+  ["../lib/**/*.rb", "../models/**/*.rb", "factories/*.rb"].each do |d|
+    Dir[File.join(File.dirname(__FILE__), "/", d)].each {|file| require file }
   end
 
   config.expect_with :rspec do |expectations|

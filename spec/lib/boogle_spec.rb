@@ -9,23 +9,37 @@ class SomeClass
 end
 
 describe "Boogle" do
-
   let(:pages) {[
-    { :pageId => 300, :content => "the quick brown fox jumped over the lazy dog" }, #2
-    { :pageId => 301, :content => "brown is the fox, red is the chicken"}, #3
-    { :pageId => 302, :content => "Set was the operationg king, he has single purposes" }, #1
-    { :pageId => 303, :content => "I wanted him to return, due to everything he had given to me"}, #0
+    build(:page, {:pageId => 300, :content => "the quick brown fox jumped over the lazy dog"}),
+    build(:page, {:pageId => 301, :content => "brown is the fox, red is the chicken"}),
+    build(:page, {:pageId => 302, :content => "Set was the operationg king, he has single purposes"}),
+    build(:page, {:pageId => 303, :content => "I wanted him to return, due to everything he had given to me"}),
   ]}
 
-  context "API controller" do
-    it "should allow accessing the home page" do
-      get '/index'
-      last_response.should be_ok
+  context "Boogle Controller" do
+    context "/index" do
+      it "should return error if required params are empty" do
+        allow(::Page).to receive(:create).and_return nil
+        get '/index'
+        expect(last_response.status).to eq 500
+      end
+
+      it "should return not insert duplicated pageId" do
+        allow(::Page).to receive(:create).and_raise Mongo::OperationFailure
+        get '/index', :pageId => 100, :content => "sample content"
+        expect(last_response.status).to eq 200
+      end
+
+      it "should return 204 no-content if data is correctly inserted" do
+        allow(::Page).to receive(:create).and_return nil
+        get '/index', :pageId => 100, :content => "sample content"
+        expect(last_response.status).to eq 204
+      end
     end
   end
 
 
-  context "API Handling" do
+  context "Boogle Models" do
     it "should return score json given a set pages and a single query" do
       query = "the fox is a very weaken mind man"
       allow(SomeClass).to receive(:method_to_retrieve_data).and_return(pages)
